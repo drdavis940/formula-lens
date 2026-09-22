@@ -1,0 +1,11 @@
+[package]
+name = "formula-lens"
+version = "0.1.0"
+edition = "2021"
+authors = ["drdavis940"]
+description = "Parses spreadsheet formula strings into an inspectable AST, with human-readable or JSON output."
+license = "MIT"
+repository = "https://github.com/drdavis940/formula-lens"
+
+# Intentionally empty: standard library only, no third-party crates.
+[dependencies]

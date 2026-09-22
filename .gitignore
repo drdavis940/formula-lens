@@ -1,0 +1,5 @@
+/target
+
+# This is a library. The lockfile is only meaningful for the final binary
+# that depends on us, so it doesn't belong in version control here.
+Cargo.lock
