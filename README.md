@@ -14,9 +14,9 @@ detection) is overkill just to answer "what cells does this formula touch" or
 "is this formula even syntactically valid." This library does only the parsing
 and inspection part.
 
-The library has no notion of a workbook or cell values; it only understands
-formula syntax. Evaluating a parsed formula against real data is on the
-roadmap, not in this version.
+The library has no notion of a workbook; a caller supplies cell values by
+implementing the [`Grid`](src/eval.rs) trait over whatever storage it
+already has, or by using the bundled `MapGrid` for quick scripts and tests.
 
 ## Usage
 
@@ -58,6 +58,27 @@ fn report(formula: &str, json_flag: bool) -> String {
 }
 ```
 
+## Evaluating against a grid
+
+Once parsed, an expression can be evaluated against a grid of cell values:
+
+```rust
+use formula_lens::{parse_formula, eval, CellRef, MapGrid};
+
+let mut grid = MapGrid::new();
+grid.set(CellRef::parse("A1").unwrap(), 1.0);
+grid.set(CellRef::parse("A2").unwrap(), 2.0);
+grid.set(CellRef::parse("A3").unwrap(), 3.0);
+
+let expr = parse_formula("=SUM(A1:A3, 4)").unwrap();
+assert_eq!(eval(&expr, &grid).unwrap(), 10.0);
+```
+
+`SUM` is the only built-in function the evaluator knows about today; an
+unrecognized cell is treated as blank (0), and calling an unsupported
+function or evaluating a bare range outside of `SUM` returns an
+`EvalError`.
+
 ## What's parsed today
 
 - Numbers: `1`, `2.5`
@@ -69,15 +90,14 @@ fn report(formula: &str, json_flag: bool) -> String {
 - Parentheses for grouping
 
 Not yet handled: string and boolean literals, `$` absolute references,
-sheet-qualified references (`Sheet2!A1`), comparison operators, and
-evaluation against actual cell values. See the module docs in `src/` for
-the current grammar.
+sheet-qualified references (`Sheet2!A1`), and comparison operators. See
+the module docs in `src/` for the current grammar.
 
 ## Status
 
-Early. The parser and AST are solid enough to build on; there's no
-evaluator yet. See the crate root doc comment (`src/lib.rs`) for the
-canonical example of the public API.
+Early. The parser, AST, and a basic evaluator (`+ - * / ^` and `SUM`) are
+solid enough to build on. See the crate root doc comment (`src/lib.rs`)
+for the canonical example of the public API.
 
 ## License
 

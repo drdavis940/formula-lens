@@ -12,11 +12,13 @@
 
 pub mod ast;
 pub mod diagnostic;
+pub mod eval;
 pub mod lexer;
 pub mod parser;
 
 pub use ast::{CellRef, Expr};
 pub use diagnostic::{Diagnostic, OutputMode};
+pub use eval::{eval, EvalError, Grid, MapGrid};
 pub use parser::ParseError;
 
 /// Parses a formula string, wrapping any [`ParseError`] into a
